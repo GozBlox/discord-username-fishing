@@ -1,6 +1,9 @@
 # Discord Username Fishing
 This tool is designed to get rare Discord usernames, which have a small number of letters, but this tool only works for mobile
 
+## Features:
+- When the script finishes creating usernames, there is an option called “Copy Usernames” When you choose it, it will create a file on the device called “avaliable_usernames.txt” containing all the saved usernames. 
+
 ## How To Setup:
 There are two different ways to run the tool:
 - Termux (IOS/ANDROID ONLY)
