@@ -303,12 +303,12 @@ def main():
     
     while True:
         clear_screen()
-        print(hunter.t("banner"))
+        print(fisher.t("banner"))
         print("[1]", fisher.t("main_menu_1"))
         print("[2]", fisher.t("main_menu_2"))
         print("[0]", fisher.t("main_menu_0"))
         
-        choice = input(f"\n{hunter.t('select_option')}: ").strip()
+        choice = input(f"\n{fisher.t('select_option')}: ").strip()
         
         if choice == "1":
             try:
@@ -335,7 +335,7 @@ def main():
             fisher.language_menu()
                 
         elif choice == "0":
-            print("\n" + hunter.t("thank_you"))
+            print("\n" + fisher.t("thank_you"))
             break
             
         else:
