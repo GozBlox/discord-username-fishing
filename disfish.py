@@ -117,11 +117,10 @@ class fishdis:
             7: 30.0,  # 30% نجاح
             8: 50.0,  # 50% نجاح
         }
-        return success_rates.get(length, 60.0)  # أكثر من 8 أحرف = 60%+ نجاح
+        return success_rates.get(length, 60.0)
     
     def generate_smart_username(self, length):
         """توليد يوزرات ذكية باحتمالية نجاح أعلى"""
-        # استخدام أنماط شائعة
         patterns = [
             string.ascii_lowercase,
             string.ascii_lowercase + string.digits,
@@ -163,7 +162,6 @@ class fishdis:
         """صيد اليوزرات بإصدار فائق السرعة"""
         print(self.t("hunting_start").format(quantity=quantity, length=username_length))
         
-        # تحذير إذا كان الطول قصير
         success_rate = self.check_length_success_rate(username_length)
         if success_rate < 5.0:
             print(self.t("low_success_warning").format(length=username_length))
@@ -188,25 +186,22 @@ class fishdis:
                     batch_results.append(checked_username)
                     print(self.t("success_found").format(username=checked_username))
                 
-                time.sleep(random.uniform(0.5, 1.5))  # تقليل التأخير
+                time.sleep(random.uniform(0.5, 1.5))
             
             return batch_results
         
-        # استخدام 4 خيوط بدلاً من 2
         with ThreadPoolExecutor(max_workers=4) as executor:
             while len(self.found_users) < quantity and self.attempts < quantity * 20:
                 future = executor.submit(hunt_batch, 25)
                 batch_results = future.result()
                 self.found_users.extend(batch_results)
                 
-                # حفظ اليوزرات فوراً
                 for user in batch_results:
                     self.save_username(user)
         
         end_time = time.time()
         total_time = end_time - start_time
         
-        # إحصائيات
         success_rate = (len(self.found_users) / self.attempts * 100) if self.attempts > 0 else 0
         
         print(self.t("hunt_completed").format(count=len(self.found_users), total=quantity))
@@ -304,47 +299,47 @@ def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def main():
-    hunter = fishdis()
+    fisher = fishdis()
     
     while True:
         clear_screen()
         print(hunter.t("banner"))
-        print("[1]", hunter.t("main_menu_1"))
-        print("[2]", hunter.t("main_menu_2"))
-        print("[0]", hunter.t("main_menu_0"))
+        print("[1]", fisher.t("main_menu_1"))
+        print("[2]", fisher.t("main_menu_2"))
+        print("[0]", fisher.t("main_menu_0"))
         
         choice = input(f"\n{hunter.t('select_option')}: ").strip()
         
         if choice == "1":
             try:
-                length = int(input(hunter.t("username_length") + ": "))
-                quantity = int(input(hunter.t("username_quantity") + ": "))
+                length = int(input(fisher.t("username_length") + ": "))
+                quantity = int(input(fisher.t("username_quantity") + ": "))
                 
-                if length < 3 or length > 32:  # تغيير من 2 إلى 3
-                    print(hunter.t("invalid_length"))
+                if length < 3 or length > 32:
+                    print(fisher.t("invalid_length"))
                     input("\nPress enter to continue...")
                     continue
                 
                 if quantity <= 0 or quantity > 1000:
-                    print(hunter.t("invalid_quantity"))
+                    print(fisher.t("invalid_quantity"))
                     input("\nPress enter to continue...")
                     continue
                 
-                hunter.mass_username_hunt(length, quantity)
+                fisher.mass_username_hunt(length, quantity)
                 
             except ValueError:
-                print(hunter.t("invalid_input"))
+                print(fisher.t("invalid_input"))
                 input("\nPress enter to continue...")
                 
         elif choice == "2":
-            hunter.language_menu()
+            fisher.language_menu()
                 
         elif choice == "0":
             print("\n" + hunter.t("thank_you"))
             break
             
         else:
-            print(hunter.t("invalid_choice"))
+            print(fisher.t("invalid_choice"))
             input("\nPress enter to continue...")
 
 if __name__ == "__main__":
