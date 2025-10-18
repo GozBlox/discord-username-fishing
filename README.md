@@ -33,15 +33,14 @@ git clone https://github.com/GozBlox/discord-username-fishing.git
 cd discord-username-fishing
 ```
 
-- sometimes this required to do:
-```
-pip install requests
-```
-
 ```
 python disfish.py
 ```
 
+- sometimes this required to do:
+```
+pip install requests
+```
 ## Pydroid:
 Download this app from the Google Play and follow these steps:
 - Download **disfish.py** file/copy **disfish.py** code
