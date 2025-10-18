@@ -61,7 +61,7 @@ class fishdis:
                 "thank_you": "[+] Thank you!",
                 "language_menu": "Choose language:",
                 "lang_1": "English",
-                "lang_2": "العربية",
+                "lang_2": "العربية (هذه اللغة يمكن ماتشتغل في Termux)",
                 "lang_success": "[+] Language changed!",
                 "low_success_warning": "[!] Warning: Low success rate for {length} chars!",
                 "recommend_length": "[!] Recommend: 4-8 chars for better results"
@@ -99,7 +99,7 @@ class fishdis:
                 "thank_you": "[+] شكراً لك!",
                 "language_menu": "اختر اللغة:",
                 "lang_1": "English",
-                "lang_2": "العربية",
+                "lang_2": "العربية (هذي اللغة يمكن ماتشتغب في Termux)",
                 "lang_success": "[+] تم تغيير اللغة!",
                 "low_success_warning": "[!] تحذير: نسبة نجاح قليلة لـ {length} حرف!",
                 "recommend_length": "[!] نوصي: 4-8 أحرف لنتائج أفضل"
