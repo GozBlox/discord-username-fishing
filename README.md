@@ -8,7 +8,7 @@ This tool is designed to get rare Discord usernames, which have a small number o
 There are two different ways to run the tool:
 - Termux (IOS/ANDROID ONLY)
 - Pydroid (ANDROID ONLY)
-- VSCode (PC/LINUX i think)
+- VSCode (WINDOWS/LINUX)
 
 ### Termux:
 - Download Termux app from Google Play or App Store 
