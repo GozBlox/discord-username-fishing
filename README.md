@@ -1,5 +1,5 @@
 # Discord Username Fishing
-This tool is designed to get rare Discord usernames, which have a small number of letters, but this tool only works for mobile
+This tool is designed to get rare Discord usernames, which have a small number of letters, but this tool only works for mobile, PC [NEW]
 
 ## Features:
 - When the script finishes creating usernames, there is an option called “Copy Usernames” When you choose it, it will create a file on the device called “avaliable_usernames.txt” containing all the saved usernames. 
@@ -8,6 +8,7 @@ This tool is designed to get rare Discord usernames, which have a small number o
 There are two different ways to run the tool:
 - Termux (IOS/ANDROID ONLY)
 - Pydroid (ANDROID ONLY)
+- VSCode (PC/LINUX i think)
 
 ### Termux:
 - Download Termux app from Google Play or App Store 
@@ -46,6 +47,15 @@ Download this app from the Google Play and follow these steps:
 - Download **disfish.py** file/copy **disfish.py** code
 - Copy: Paste the code in pydroid and run (you might need to install the libraries)
 - Download: Download the **disfish.py** file and go to **Pydroid** and click **Open** Option and give fil access to **Pydroid** and **Select** disfish.py, and run (you might need to install the libraries)
+
+## VSCode:
+- First: Download Python From the [Official Website](https://python.org)
+- Second: In **Setup** Progress, Select **Add Python to PATH**
+- Third: In Visual Studio Code, Go to the extensions tab and install **python** extension
+- Fourth: When You Copy the script, Open **Terminal** and write:
+```
+python your-file-name.py
+```
 
 ## FaQ:
 ### Q: Why when I choose everything, the number of characters and how many to print for username, why doesn't it print?:
