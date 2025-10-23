@@ -22,10 +22,10 @@ class fishdis:
             'Referer': 'https://discord.com/'
         }
         self.language = "english"
-        
+
     def set_language(self, lang):
         self.language = lang
-        
+
     def t(self, key):
         translations = {
             "english": {
@@ -41,6 +41,8 @@ class fishdis:
                 "select_option": "Select option",
                 "username_length": "Username length (3-32)",
                 "username_quantity": "Number of usernames (1-1000)",
+                "username_pattern": "Do you want usernames with underscores? (yes/no)",
+                "pattern_explanation": "Usernames like tm_p, n_i, x_z (higher success rate)",
                 "invalid_length": "[-] Length must be between 3-32",
                 "invalid_quantity": "[-] Quantity must be 1-1000",
                 "invalid_input": "[-] Invalid input",
@@ -61,7 +63,7 @@ class fishdis:
                 "thank_you": "[+] Thank you!",
                 "language_menu": "Choose language:",
                 "lang_1": "English",
-                "lang_2": "العربية (هذه اللغة يمكن ماتشتغل في Termux)",
+                "lang_2": "العربية",
                 "lang_success": "[+] Language changed!",
                 "low_success_warning": "[!] Warning: Low success rate for {length} chars!",
                 "recommend_length": "[!] Recommend: 4-8 chars for better results"
@@ -79,6 +81,8 @@ class fishdis:
                 "select_option": "اختر الخيار",
                 "username_length": "كم حرف فاليوزر (3-32)",
                 "username_quantity": "كم اسم تبي (1-1000)",
+                "username_pattern": "هل تبي يكون اليوزر فيه _ (underscore)? (yes/no)",
+                "pattern_explanation": "يوزرات مثل tm_p, n_i, x_z (نسبة نجاح أعلى)",
                 "invalid_length": "[-] عدد الحروف يجب أن يكون بين 3 و 32",
                 "invalid_quantity": "[-] عدد الأسماء يجب أن يكون بين 1 و 1000",
                 "invalid_input": "[-] مدخل غير صحيح",
@@ -99,14 +103,14 @@ class fishdis:
                 "thank_you": "[+] شكراً لك!",
                 "language_menu": "اختر اللغة:",
                 "lang_1": "English",
-                "lang_2": "العربية (هذي اللغة يمكن ماتشتغب في Termux)",
+                "lang_2": "العربية",
                 "lang_success": "[+] تم تغيير اللغة!",
                 "low_success_warning": "[!] تحذير: نسبة نجاح قليلة لـ {length} حرف!",
                 "recommend_length": "[!] نوصي: 4-8 أحرف لنتائج أفضل"
             }
         }
         return translations[self.language][key]
-    
+
     def check_length_success_rate(self, length):
         """تقدير نسبة النجاح بناءً على طول اليوزر"""
         success_rates = {
@@ -118,34 +122,48 @@ class fishdis:
             8: 50.0,  # 50% نجاح
         }
         return success_rates.get(length, 60.0)
-    
-    def generate_smart_username(self, length):
-        """توليد يوزرات ذكية باحتمالية نجاح أعلى"""
-        patterns = [
-            string.ascii_lowercase,
-            string.ascii_lowercase + string.digits,
-            string.ascii_lowercase + '_',
-            string.ascii_lowercase + string.digits + '_'
-        ]
-        
-        chars = random.choice(patterns)
-        return ''.join(random.choice(chars) for _ in range(length))
-    
+
+    def generate_smart_username(self, length, use_underscore=False):
+        """توليد يوزرات ذكية مع خيار underscore فقط"""
+        if use_underscore:
+            patterns = [
+                lambda: ''.join(random.choice(string.ascii_lowercase) for _ in range(length-2)) + '_' + random.choice(string.ascii_lowercase),
+                lambda: random.choice(string.ascii_lowercase) + '_' + ''.join(random.choice(string.ascii_lowercase) for _ in range(length-2)),
+                lambda: ''.join(random.choice(string.ascii_lowercase) for _ in range(length-2)) + '_' + random.choice(string.ascii_lowercase),
+                lambda: ''.join(random.choice(string.ascii_lowercase) for _ in range(length//2)) + '_' + ''.join(random.choice(string.ascii_lowercase) for _ in range(length-length//2-1)),
+                lambda: random.choice(string.ascii_lowercase) + '_' + random.choice(string.ascii_lowercase) + '_' + random.choice(string.ascii_lowercase) if length >= 5 else None
+            ]
+            
+            valid_patterns = [p for p in patterns if p() is not None]
+            if valid_patterns:
+                pattern = random.choice(valid_patterns)
+                username = pattern()
+                if username and len(username) == length:
+                    return username
+            chars = string.ascii_lowercase + '_'
+            username = ''.join(random.choice(chars) for _ in range(length))
+            if '_' not in username:
+                pos = random.randint(1, length-2)
+                username = username[:pos] + '_' + username[pos+1:]
+            return username
+        else:
+            return ''.join(random.choice(string.ascii_lowercase) for _ in range(length))
+
     def check_username_availability(self, username):
         """التحقق من اليوزر مع معالجة أفضل للمعدل"""
         try:
             url = "https://discord.com/api/v9/unique-username/username-attempt-unauthed"
             payload = {"username": username}
-            
+
             response = self.session.post(
                 url, 
                 json=payload,
                 headers=self.headers, 
                 timeout=10
             )
-            
+
             self.attempts += 1
-            
+
             if response.status_code == 200:
                 data = response.json()
                 return data.get('taken') == False, username
@@ -154,63 +172,66 @@ class fishdis:
                 return False, username
             else:
                 return False, username
-                
+
         except Exception:
             return False, username
-    
-    def mass_username_hunt(self, username_length, quantity):
-        """صيد اليوزرات بإصدار فائق السرعة"""
+
+    def mass_username_hunt(self, username_length, quantity, use_underscore=False):
+        """صيد اليوزرات مع خيار underscore"""
         print(self.t("hunting_start").format(quantity=quantity, length=username_length))
         
+        if use_underscore:
+            print("[+] Using underscore pattern (like: ab_c, x_yz)")
+
         success_rate = self.check_length_success_rate(username_length)
         if success_rate < 5.0:
             print(self.t("low_success_warning").format(length=username_length))
             print(self.t("recommend_length"))
-        
+
         self.found_users = []
         self.attempts = 0
-        
+
         start_time = time.time()
-        
+
         def hunt_batch(batch_size=50):
             """صيد مجموعة من اليوزرات"""
             batch_results = []
             for _ in range(batch_size):
                 if len(self.found_users) >= quantity:
                     break
-                    
-                username = self.generate_smart_username(username_length)
+
+                username = self.generate_smart_username(username_length, use_underscore)
                 available, checked_username = self.check_username_availability(username)
-                
+
                 if available:
                     batch_results.append(checked_username)
                     print(self.t("success_found").format(username=checked_username))
-                
+
                 time.sleep(random.uniform(0.5, 1.5))
-            
+
             return batch_results
-        
+
         with ThreadPoolExecutor(max_workers=4) as executor:
             while len(self.found_users) < quantity and self.attempts < quantity * 20:
                 future = executor.submit(hunt_batch, 25)
                 batch_results = future.result()
                 self.found_users.extend(batch_results)
-                
+
                 for user in batch_results:
                     self.save_username(user)
-        
+
         end_time = time.time()
         total_time = end_time - start_time
-        
+
         success_rate = (len(self.found_users) / self.attempts * 100) if self.attempts > 0 else 0
-        
+
         print(self.t("hunt_completed").format(count=len(self.found_users), total=quantity))
         print(self.t("success_rate").format(rate=round(success_rate, 2)))
         print(f"[+] Time taken: {round(total_time, 2)} seconds")
         print(f"[+] Total attempts: {self.attempts}")
-        
+
         self.post_hunt_menu()
-    
+
     def save_username(self, username):
         """حفظ اليوزرات"""
         try:
@@ -218,15 +239,15 @@ class fishdis:
                 file.write(username + "\n")
         except Exception:
             pass
-    
+
     def copy_all_usernames(self):
         """نسخ اليوزرات"""
         if not self.found_users:
             print(self.t("no_usernames"))
             return
-        
+
         usernames_text = "\n".join(self.found_users)
-        
+
         try:
             import pyperclip
             pyperclip.copy(usernames_text)
@@ -238,9 +259,9 @@ class fishdis:
             print(usernames_text)
             print("="*50)
             print(self.t("copy_manual"))
-        
+
         input("\nPress enter to continue...")
-    
+
     def post_hunt_menu(self):
         """قائمة ما بعد الصيد"""
         while True:
@@ -252,9 +273,9 @@ class fishdis:
             print("[2]", self.t("post_hunt_2"))
             print("[0]", self.t("post_hunt_0"))
             print("="*40)
-            
+
             choice = input(f"\n{self.t('select_option')}: ").strip()
-            
+
             if choice == "1":
                 self.copy_all_usernames()
                 break
@@ -266,7 +287,7 @@ class fishdis:
                 sys.exit(0)
             else:
                 print(self.t("invalid_choice"))
-    
+
     def language_menu(self):
         """قائمة اللغات"""
         while True:
@@ -276,9 +297,9 @@ class fishdis:
             print("[1]", self.t("lang_1"))
             print("[2]", self.t("lang_2"))
             print("[0]", self.t("main_menu_0"))
-            
+
             choice = input(f"\n{self.t('select_option')}: ").strip()
-            
+
             if choice == "1":
                 self.set_language("english")
                 print(self.t("lang_success"))
@@ -300,44 +321,49 @@ def clear_screen():
 
 def main():
     fisher = fishdis()
-    
+
     while True:
         clear_screen()
         print(fisher.t("banner"))
         print("[1]", fisher.t("main_menu_1"))
         print("[2]", fisher.t("main_menu_2"))
         print("[0]", fisher.t("main_menu_0"))
-        
+
         choice = input(f"\n{fisher.t('select_option')}: ").strip()
-        
+
         if choice == "1":
             try:
                 length = int(input(fisher.t("username_length") + ": "))
                 quantity = int(input(fisher.t("username_quantity") + ": "))
                 
+                # السؤال الجديد عن underscore
+                print(fisher.t("pattern_explanation"))
+                pattern_choice = input(fisher.t("username_pattern") + ": ").lower().strip()
+                use_underscore = pattern_choice in ['yes', 'y', 'نعم', 'yep']
+
                 if length < 3 or length > 32:
                     print(fisher.t("invalid_length"))
                     input("\nPress enter to continue...")
                     continue
-                
+
                 if quantity <= 0 or quantity > 1000:
                     print(fisher.t("invalid_quantity"))
                     input("\nPress enter to continue...")
                     continue
-                
-                fisher.mass_username_hunt(length, quantity)
-                
+
+                fisher.mass_username_hunt(length, quantity, use_underscore)
+
             except ValueError:
                 print(fisher.t("invalid_input"))
                 input("\nPress enter to continue...")
-                
+
         elif choice == "2":
             fisher.language_menu()
-                
+
         elif choice == "0":
             print("\n" + fisher.t("thank_you"))
             break
-            
+
         else:
             print(fisher.t("invalid_choice"))
             input("\nPress enter to continue...")
