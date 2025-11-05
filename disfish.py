@@ -11,7 +11,7 @@ class fishdis:
     def __init__(self):
         self.session = requests.Session()
         self.found_users = []
-        self.rate_limit_delay = 1.0
+        self.rate_limit_delay = 0.1
         self.attempts = 0
         self.success_rate = 0
         self.headers = {
@@ -30,10 +30,23 @@ class fishdis:
         translations = {
             "english": {
                 "banner": """
-    ╔══════════════════════════════════════════════╗
-    ║           DISCORD USERNAME FISHING v1.0      ║
-    ║           [MADE BY GozBlox (F4X]              ║
-    ╚══════════════════════════════════════════════╝
+                
+                 |
+                 |
+                ,|.
+               ,\|/.
+             ,' .V. `.
+            / .     . \
+           /_`       '_\
+          ,' .:     ;, `.
+          |@)|  . .  |(@|
+     ,-._ `._';  .  :`_,' _,-.
+    '--  `-\ /,-===-.\ /-'  --`
+   (----  _|  ||___||  |_  ----)
+    `._,-'  \  `-.-'  /  `-._,'
+             `-.___,-' 
+     ╰┈┈┈┈➤ DISCORD USERNAME FISHING [V1.1]
+          ╰┈┈➤ CODED/CREATED BY: GozBlox [F4X]
                 """,
                 "main_menu_1": "Hunt Usernames",
                 "main_menu_2": "Languages", 
@@ -70,10 +83,23 @@ class fishdis:
             },
             "arabic": {
                 "banner": """
-    ╔══════════════════════════════════════════════╗
-    ║           صياد يوزرات الديسكورد v1.0        ║
-    ║           [الاداة مصنوعه من طرف GozBlox (F4X)]            ║
-    ╚══════════════════════════════════════════════╝
+                
+                 |
+                 |
+                ,|.
+               ,\|/.
+             ,' .V. `.
+            / .     . \
+           /_`       '_\
+          ,' .:     ;, `.
+          |@)|  . .  |(@|
+     ,-._ `._';  .  :`_,' _,-.
+    '--  `-\ /,-===-.\ /-'  --`
+   (----  _|  ||___||  |_  ----)
+    `._,-'  \  `-.-'  /  `-._,'
+             `-.___,-' 
+     ╰┈┈┈┈➤ صيد يوزرات الديسكورد [V1.1]
+           ╰┈┈➤ صنعها: GozBlow [F4X]
                 """,
                 "main_menu_1": "صيد اليوزرات",
                 "main_menu_2": "اللغات",
@@ -119,7 +145,7 @@ class fishdis:
             5: 5.0,   # 5% نجاح
             6: 15.0,  # 15% نجاح
             7: 30.0,  # 30% نجاح
-            8: 50.0,  # 50% نجاح
+            8: 100,  # 50% نجاح
         }
         return success_rates.get(length, 60.0)
 
@@ -133,7 +159,7 @@ class fishdis:
                 lambda: ''.join(random.choice(string.ascii_lowercase) for _ in range(length//2)) + '_' + ''.join(random.choice(string.ascii_lowercase) for _ in range(length-length//2-1)),
                 lambda: random.choice(string.ascii_lowercase) + '_' + random.choice(string.ascii_lowercase) + '_' + random.choice(string.ascii_lowercase) if length >= 5 else None
             ]
-            
+
             valid_patterns = [p for p in patterns if p() is not None]
             if valid_patterns:
                 pattern = random.choice(valid_patterns)
@@ -159,7 +185,7 @@ class fishdis:
                 url, 
                 json=payload,
                 headers=self.headers, 
-                timeout=10
+                timeout=1
             )
 
             self.attempts += 1
@@ -168,7 +194,7 @@ class fishdis:
                 data = response.json()
                 return data.get('taken') == False, username
             elif response.status_code == 429:
-                time.sleep(1.5)
+                time.sleep(0.1)
                 return False, username
             else:
                 return False, username
@@ -179,7 +205,7 @@ class fishdis:
     def mass_username_hunt(self, username_length, quantity, use_underscore=False):
         """صيد اليوزرات مع خيار underscore"""
         print(self.t("hunting_start").format(quantity=quantity, length=username_length))
-        
+
         if use_underscore:
             print("[+] Using underscore pattern (like: ab_c, x_yz)")
 
@@ -207,13 +233,13 @@ class fishdis:
                     batch_results.append(checked_username)
                     print(self.t("success_found").format(username=checked_username))
 
-                time.sleep(random.uniform(0.5, 1.5))
+                time.sleep(random.uniform(0, 0.5))
 
             return batch_results
 
-        with ThreadPoolExecutor(max_workers=4) as executor:
+        with ThreadPoolExecutor(max_workers=20) as executor:
             while len(self.found_users) < quantity and self.attempts < quantity * 20:
-                future = executor.submit(hunt_batch, 25)
+                future = executor.submit(hunt_batch, 450)
                 batch_results = future.result()
                 self.found_users.extend(batch_results)
 
@@ -335,7 +361,7 @@ def main():
             try:
                 length = int(input(fisher.t("username_length") + ": "))
                 quantity = int(input(fisher.t("username_quantity") + ": "))
-                
+
                 # السؤال الجديد عن underscore
                 print(fisher.t("pattern_explanation"))
                 pattern_choice = input(fisher.t("username_pattern") + ": ").lower().strip()
@@ -346,7 +372,7 @@ def main():
                     input("\nPress enter to continue...")
                     continue
 
-                if quantity <= 0 or quantity > 1000:
+                if quantity <= 0 or quantity > 10000000:
                     print(fisher.t("invalid_quantity"))
                     input("\nPress enter to continue...")
                     continue
