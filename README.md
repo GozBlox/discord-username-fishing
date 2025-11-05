@@ -7,7 +7,7 @@ This tool is designed to get rare Discord usernames, which have a small number o
 ## How To Setup:
 There are two different ways to run the tool:
 - Termux (IOS/ANDROID ONLY)
-- Pydroid (ANDROID ONLY)
+- Pydroid/PyCode (ANDROID ONLY)
 - VSCode (WINDOWS/LINUX)
 
 ### Termux:
@@ -47,6 +47,9 @@ Download this app from the Google Play and follow these steps:
 - Download **disfish.py** file/copy **disfish.py** code
 - Copy: Paste the code in pydroid and run (you might need to install the libraries)
 - Download: Download the **disfish.py** file and go to **Pydroid** and click **Open** Option and give fil access to **Pydroid** and **Select** disfish.py, and run (you might need to install the libraries)
+
+### PyCode:
+The same thing as **PyDroid** steps, but, you have to install the libraries/modules in **TERMINAL**
 
 ## VSCode:
 - First: Download Python From the [Official Website](https://python.org)
