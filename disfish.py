@@ -1,3 +1,4 @@
+# this code could be outdated and we are gonna to make another one 
 import requests
 import random
 import string
